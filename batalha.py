@@ -21,7 +21,7 @@ fundo = carregar_img("assets/background/background_batalha.png", (LARGURA, ALTUR
 barra_status_adv = carregar_img("assets/background/barras_status_adv.png", (500, 200))
 barra_status_jgd = carregar_img("assets/background/barras_status_jgd.png", (550, 200))
 interface_batalha = carregar_img("assets/background/interface_batalha.png", (LARGURA, 450))
-caixa_ataques = carregar_img("assets/background/caixa_ataques.png", (990, 490))
+caixa_ataques = carregar_img("assets/background/caixa_ataques.png", (990, 380))
 
 tamanho_cinmon = (600, 600)
 charcabras_frente = carregar_img("assets/cinmons/charcara_frente.png", tamanho_cinmon)
@@ -229,7 +229,8 @@ while rodando:
 
     # --- INTERFACE INFERIOR ---
     if tela_atual in ["menu", "mensagem", "fim_batalha"]:
-        tela.blit(interface_batalha, (0, 100)) 
+        pygame.draw.rect(tela, (0, 0, 0), (0, 395, 990, 210))
+        tela.blit(interface_batalha, (0, 105)) 
         
         if tela_atual == "menu":
             tela.blit(texto_pergunta, (40, 425))
@@ -246,7 +247,8 @@ while rodando:
             tela.blit(fonte.render(mensagem_batalha, True, (255, 255, 255)), (40, 425))
 
     elif tela_atual == "ataques":
-        tela.blit(caixa_ataques, (-10, 190))
+        pygame.draw.rect(tela, (0, 0, 0), (0, 395, 990, 210))
+        tela.blit(caixa_ataques, (-10, 210))
         posicoes_txt_atq = [(50, 425), (350, 425), (50, 480), (350, 480)]
         posicoes_seta_atq = [(30, 433), (330, 433), (30, 488), (330, 488)]
         
