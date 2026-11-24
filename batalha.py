@@ -36,6 +36,7 @@ vampteuth_tras = carregar_img("assets/cinmons/vampteuth_tras.png", (300, 300))
 fonte = pygame.font.Font(None, 40)
 duracao_branco = 500
 duracao_desaparecimento = 1000
+duracao_impacto = 450
 
 especies_cinmon = {
     "Charcabrás": {
@@ -83,6 +84,12 @@ def efeito_derrota(sprite, tempo):
         progresso = (tempo - duracao_branco) / duracao_desaparecimento
         alpha = max(0, int(255 * (1 - progresso)))
         sprite.set_alpha(alpha)
+    return sprite
+
+def efeito_impacto(sprite, tempo):
+    sprite = sprite.copy()
+    if (tempo // 80) % 2 == 0:
+        sprite.fill((180, 180, 180), special_flags=pygame.BLEND_RGB_ADD)
     return sprite
 
 def ataques_disponiveis(especie, nivel):
@@ -134,6 +141,8 @@ mensagem_batalha = ""
 tempo_mensagem = 0
 cinmon_derrotado = None
 inicio_derrota = 0
+alvo_impacto = None
+inicio_impacto = 0
 rodando = True
 
 # --- 5. LOOP PRINCIPAL ---
@@ -149,7 +158,7 @@ while rodando:
                 if evento.key == pygame.K_s: selecao = min(3, selecao + 2)
                 if evento.key == pygame.K_w: selecao = max(0, selecao - 2)
 
-                if evento.key == pygame.K_RETURN or evento.key == pygame.K_SPACE:
+                if evento.key in (pygame.K_RETURN, pygame.K_SPACE):
                     if selecao == 0:  # Lutar
                         tela_atual = "ataques"
                         selecao_ataque = 0
@@ -171,7 +180,7 @@ while rodando:
                 if evento.key == pygame.K_s and selecao_ataque < 2: selecao_ataque += 2
                 if evento.key == pygame.K_w and selecao_ataque >= 2: selecao_ataque -= 2
                 
-                if evento.key == pygame.K_RETURN and qr_ataques[selecao_ataque] > 0:
+                if qr_ataques[selecao_ataque] > 0 and evento.key in (pygame.K_RETURN, pygame.K_SPACE):
                     qr_ataques[selecao_ataque] -= 1
                     mensagem_batalha = f"{especie_jogador} usou {ataques[selecao_ataque]}!"
                     etapa_batalha = "ataque_jogador"
@@ -179,7 +188,7 @@ while rodando:
                     tempo_mensagem = pygame.time.get_ticks()
 
             elif tela_atual == "mensagem":
-                if evento.key == pygame.K_RETURN and etapa_batalha == "esperando_jogador":
+                if evento.key in (pygame.K_RETURN, pygame.K_SPACE) and etapa_batalha == "esperando_jogador":
                     # Turno do adversário
                     atqs_disponiveis = [i for i, qr in enumerate(qr_adversario) if qr > 0]
                     if atqs_disponiveis:
@@ -190,19 +199,21 @@ while rodando:
                         tempo_mensagem = pygame.time.get_ticks()
 
             elif tela_atual == "mochila":
-                if evento.key in (pygame.K_SPACE, pygame.K_RETURN):
+                if evento.key in (pygame.K_RETURN, pygame.K_SPACE):
                     tela_atual = "menu"
 
             elif tela_atual == "cinmon":
-                if evento.key in (pygame.K_SPACE, pygame.K_RETURN):
+                if evento.key in (pygame.K_RETURN, pygame.K_SPACE):
                     tela_atual = "menu"
 
-            elif tela_atual == "fim_batalha" and evento.key == pygame.K_RETURN:
+            elif tela_atual == "fim_batalha" and evento.key in (pygame.K_RETURN, pygame.K_SPACE):
                 rodando = False
 
     # Lógica de Tempo (Dano)
     if etapa_batalha == "ataque_jogador" and pygame.time.get_ticks() - tempo_mensagem >= 1000:
         cinmon_adversario["hp"] = max(0, cinmon_adversario["hp"] - dano_ataques[selecao_ataque])
+        alvo_impacto = "adversario"
+        inicio_impacto = pygame.time.get_ticks()
         if cinmon_adversario["hp"] == 0:
             mensagem_batalha = f"{especie_adversario} foi derrotado!"
             cinmon_derrotado, etapa_batalha = "adversario", "animacao_derrota"
@@ -213,6 +224,8 @@ while rodando:
 
     elif etapa_batalha == "ataque_adversario" and pygame.time.get_ticks() - tempo_mensagem >= 1000:
         cinmon_jogador["hp"] = max(0, cinmon_jogador["hp"] - dano_adversario[ataque_escolhido])
+        alvo_impacto = "jogador"
+        inicio_impacto = pygame.time.get_ticks()
         if cinmon_jogador["hp"] == 0:
             mensagem_batalha = f"{especie_jogador} foi derrotado!"
             cinmon_derrotado, etapa_batalha = "jogador", "animacao_derrota"
@@ -236,16 +249,30 @@ while rodando:
 
     # Sprites
     tempo_derrota = pygame.time.get_ticks() - inicio_derrota
+    tempo_impacto = pygame.time.get_ticks() - inicio_impacto
+    impacto_ativo = alvo_impacto is not None and tempo_impacto < duracao_impacto
     
     if cinmon_derrotado == "jogador" and tempo_derrota < duracao_branco + duracao_desaparecimento:
-        tela.blit(efeito_derrota(sprite_jogador, tempo_derrota), (-50, 60))
-    elif cinmon_derrotado != "jogador":
-        tela.blit(sprite_jogador, (-50, 60))
+        sprite_atual_jogador = efeito_derrota(sprite_jogador, tempo_derrota)
+    else:
+        sprite_atual_jogador = sprite_jogador
+    pos_x_jogador = -50
+    if impacto_ativo and alvo_impacto == "jogador":
+        sprite_atual_jogador = efeito_impacto(sprite_atual_jogador, tempo_impacto)
+        pos_x_jogador -= int(12 * (1 - tempo_impacto / duracao_impacto))
+    if cinmon_derrotado != "jogador" or tempo_derrota < duracao_branco + duracao_desaparecimento:
+        tela.blit(sprite_atual_jogador, (pos_x_jogador, 60))
 
     if cinmon_derrotado == "adversario" and tempo_derrota < duracao_branco + duracao_desaparecimento:
-        tela.blit(efeito_derrota(sprite_adversario, tempo_derrota), (580, -10))
-    elif cinmon_derrotado != "adversario":
-        tela.blit(sprite_adversario, (580, -10))
+        sprite_atual_adversario = efeito_derrota(sprite_adversario, tempo_derrota)
+    else:
+        sprite_atual_adversario = sprite_adversario
+    pos_x_adversario = 580
+    if impacto_ativo and alvo_impacto == "adversario":
+        sprite_atual_adversario = efeito_impacto(sprite_atual_adversario, tempo_impacto)
+        pos_x_adversario += int(12 * (1 - tempo_impacto / duracao_impacto))
+    if cinmon_derrotado != "adversario" or tempo_derrota < duracao_branco + duracao_desaparecimento:
+        tela.blit(sprite_atual_adversario, (pos_x_adversario, -10))
 
     # --- INTERFACE INFERIOR ---
     if tela_atual in ["menu", "mensagem", "mochila", "cinmon", "fim_batalha"]:
@@ -280,7 +307,8 @@ while rodando:
 
         tela.blit(fonte.render(f"QR: {qr_ataques[selecao_ataque]}/{qr_max[selecao_ataque]}", True, (0, 0, 0)), (730, 425))
         tela.blit(fonte.render(f"TIPO: {especies_cinmon[especie_jogador]['tipo'].upper()}", True, (0, 0, 0)), (730, 480))
-
+    
+    print("Rodando...")  # Debugging line to check if the loop is running
     pygame.display.flip()
     relogio.tick(60)
 
