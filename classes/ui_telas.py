@@ -79,7 +79,12 @@ class GerenciadorTelas:
         if evento.type == pygame.KEYDOWN and evento.key == pygame.K_ESCAPE:
             self.progresso_zoom = 0.0
             return "TELA_INICIAL"
+        
+        #ENTER ou ESPAÇO abre a batalha (temporario do Mateus)
+        if evento.type == pygame.KEYDOWN and evento.key in (pygame.K_SPACE, pygame.K_RETURN):
+            return "ABRIR_BATALHA"
 
+        #botao voltar e batalha
         if evento.type == pygame.MOUSEBUTTONDOWN and evento.button == 1:
             if self.botao_voltar.collidepoint(evento.pos):
                 self.progresso_zoom = 0.0
