@@ -152,7 +152,7 @@ while rodando:
         texto_batalha = fonte_botao.render("BATALHA", True, (255, 255, 255))
         tela.blit(texto_batalha, texto_batalha.get_rect(center=botao_batalha.center))
         
-
+    print("Rodando...")  # Debugging line to check if the loop is running
     pygame.display.flip()
     clock.tick(60)
 

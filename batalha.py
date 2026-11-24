@@ -356,7 +356,7 @@ while rodando:
         tela.blit(fonte.render(f"QR: {qr_ataques[selecao_ataque]}/{qr_max[selecao_ataque]}", True, (0, 0, 0)), (730, 425))
         tela.blit(fonte.render(f"TIPO: {especies_cinmon[especie_jogador]['tipo'].upper()}", True, (0, 0, 0)), (730, 480))
     
-    print("Rodando...")  # Debugging line to check if the loop is running
+
     pygame.display.flip()
     relogio.tick(60)
 
