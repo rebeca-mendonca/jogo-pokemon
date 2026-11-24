@@ -1,14 +1,18 @@
 import pygame
+from pathlib import Path
 
 pygame.init()
 print("CINMON INICIOU!")
 
-charcara = pygame.image.load("assets/cinmons/charcara_tras.png")
-vampteuth = pygame.image.load("assets/cinmons/vampteuth_frente.png")
-fundo = pygame.image.load("assets/background/background_batalha.png")
-barra_status_adv = pygame.image.load("assets/background/barras_status_adv.png")
-barra_status_jgd = pygame.image.load("assets/background/barras_status_jgd.png")
-interface_batalha = pygame.image.load("assets/background/interface_batalha.png")
+base_pasta = Path(__file__).resolve().parent.parent
+assets = base_pasta / "assets" / "imagens"
+
+charcara = pygame.image.load(assets / "cinmons" / "charcara_tras.png")
+vampteuth = pygame.image.load(assets / "cinmons" / "vampteuth_frente.png")
+fundo = pygame.image.load(assets / "background" / "background_batalha.png")
+barra_status_adv = pygame.image.load(assets / "background" / "barras_status_adv.png")
+barra_status_jgd = pygame.image.load(assets / "background" / "barras_status_jgd.png")
+interface_batalha = pygame.image.load(assets / "background" / "interface_batalha.png")
 
 fundo = pygame.transform.scale(fundo, (970, 550))
 barra_status_adv = pygame.transform.scale(barra_status_adv, (500, 200))
