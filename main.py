@@ -26,6 +26,9 @@ fonte_esc = pygame.font.Font(None, 26)
 botao_jogar = pygame.Rect(0, 0, 180, 50)
 botao_jogar.center = (LARGURA // 2, 315)
 
+#botao voltar da tela da placa
+botao_voltar = pygame.Rect(LARGURA - 145, ALTURA - 42, 130, 28)
+
 #frase embaixo
 texto_creditos = fonte_creditos.render("@EC2026.2", True, (0, 0, 0))
 rect_creditos = texto_creditos.get_rect(center=( LARGURA // 2, 560))
@@ -58,6 +61,12 @@ while rodando:
             #apertar ESC p a tela inicial
             if evento.type == pygame.KEYDOWN:
                 if evento.key == pygame.K_ESCAPE:
+                    progresso_zoom = 0.0
+                    estado_jogo = "TELA_INICIAL"
+
+            #clique no botao de voltar
+            if evento.type == pygame.MOUSEBUTTONDOWN and evento.button == 1:
+                if botao_voltar.collidepoint(evento.pos):
                     progresso_zoom = 0.0
                     estado_jogo = "TELA_INICIAL"
 
@@ -104,13 +113,17 @@ while rodando:
     elif estado_jogo == "PLACA_CIN":
         tela.blit(fundo_placa, (0, 0))
 
-        #aviso do esc
-        caixa_esc = pygame.Rect(LARGURA - 145, ALTURA - 42, 130, 28)
-        pygame.draw.rect(tela, (20, 20, 25), caixa_esc, border_radius=6)
-        pygame.draw.rect(tela, (255, 255, 255), caixa_esc, width=1, border_radius=6)
+        #botao voltar
+        mouse_em_cima = botao_voltar.collidepoint(pos_mouse)
+        cor_fundo = (225, 65, 50) if mouse_em_cima else (20, 20, 25)
+        cor_borda = (255, 220, 120) if mouse_em_cima else (255, 255, 255)
+
+        pygame.draw.rect(tela, cor_fundo, botao_voltar, border_radius=6)
+        pygame.draw.rect(tela, cor_borda, botao_voltar, width=2, border_radius=6)
 
         texto_esc = fonte_esc.render("ESC - Voltar", True, (255, 255, 255))
-        tela.blit(texto_esc, texto_esc.get_rect(center=caixa_esc.center))
+        tela.blit(texto_esc, texto_esc.get_rect(center=botao_voltar.center))
+        
 
     pygame.display.flip()
     clock.tick(60)
