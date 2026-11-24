@@ -1,4 +1,5 @@
 import pygame
+from pathlib import Path
 from constants import (
     LARGURA,
     ALTURA,
@@ -14,10 +15,14 @@ from utils.helpers import desenhar_texto_quebrado, desenhar_pagina_controles
 
 class GerenciadorTelas:
     def __init__(self):
-        self.fundo_titulo = pygame.image.load("assets/imagens/cenarios/tela_inicial.png").convert()
+        base_pasta = Path(__file__).resolve().parent.parent
+        caminho_tela_inicial = base_pasta / "assets" / "imagens" / "cenarios" / "tela_inicial.png"
+        caminho_placa = base_pasta / "assets" / "imagens" / "cenarios" / "Placa_cin.png"
+
+        self.fundo_titulo = pygame.image.load(caminho_tela_inicial).convert()
         self.fundo_titulo = pygame.transform.scale(self.fundo_titulo, (LARGURA, ALTURA))
 
-        self.fundo_placa = pygame.image.load("assets/imagens/cenarios/Placa_cin.png").convert()
+        self.fundo_placa = pygame.image.load(caminho_placa).convert()
         self.fundo_placa = pygame.transform.scale(self.fundo_placa, (LARGURA, ALTURA))
 
         #fontes

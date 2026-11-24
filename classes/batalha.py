@@ -1,5 +1,6 @@
 import pygame
 import random
+from pathlib import Path
 
 pygame.init()
 
@@ -17,20 +18,23 @@ def carregar_img(caminho, tamanho=None):
     return img
 
 # Carregando as imagens com a nova função
-fundo = carregar_img("assets/background/background_batalha.png", (LARGURA, ALTURA))
-barra_status_adv = carregar_img("assets/background/barras_status_adv.png", (500, 200))
-barra_status_jgd = carregar_img("assets/background/barras_status_jgd.png", (550, 200))
-interface_batalha = carregar_img("assets/background/interface_batalha.png", (LARGURA, 450))
-caixa_ataques = carregar_img("assets/background/caixa_ataques.png", (990, 380))
+base_pasta = Path(__file__).resolve().parent.parent
+assets = base_pasta / "assets" / "imagens"
+
+fundo = carregar_img(assets / "background" / "background_batalha.png", (LARGURA, ALTURA))
+barra_status_adv = carregar_img(assets / "background" / "barras_status_adv.png", (500, 200))
+barra_status_jgd = carregar_img(assets / "background" / "barras_status_jgd.png", (550, 200))
+interface_batalha = carregar_img(assets / "background" / "interface_batalha.png", (LARGURA, 450))
+caixa_ataques = carregar_img(assets / "background" / "caixa_ataques.png", (990, 380))
 
 tamanho_cinmon = (600, 600)
-charcabras_frente = carregar_img("assets/cinmons/charcabras_frente.png", tamanho_cinmon)
-charcabras_tras = carregar_img("assets/cinmons/charcabras_tras.png", tamanho_cinmon)
-charcara_tras = carregar_img("assets/cinmons/charcara_tras.png", tamanho_cinmon)
-charcara_frente = carregar_img("assets/cinmons/charcara_frente.png", tamanho_cinmon)
+charcabras_frente = carregar_img(assets / "cinmons" / "charcabras_frente.png", tamanho_cinmon)
+charcabras_tras = carregar_img(assets / "cinmons" / "charcabras_tras.png", tamanho_cinmon)
+charcara_tras = carregar_img(assets / "cinmons" / "charcara_tras.png", tamanho_cinmon)
+charcara_frente = carregar_img(assets / "cinmons" / "charcara_frente.png", tamanho_cinmon)
 
-vampteuth_frente = carregar_img("assets/cinmons/vampteuth_frente.png", (300, 300))
-vampteuth_tras = carregar_img("assets/cinmons/vampteuth_tras.png", (300, 300))
+vampteuth_frente = carregar_img(assets / "cinmons" / "vampteuth_frente.png", (300, 300))
+vampteuth_tras = carregar_img(assets / "cinmons" / "vampteuth_tras.png", (300, 300))
 
 # --- 2. DADOS DO JOGO ---
 fonte = pygame.font.Font(None, 40)
