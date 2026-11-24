@@ -1,7 +1,7 @@
 import pygame
 import sys
-import runpy
-from pathlib import Path
+import subprocess
+import os
 from constants import LARGURA, ALTURA, FPS
 from classes.ui_telas import GerenciadorTelas
 
@@ -30,12 +30,8 @@ while rodando:
             if estado_jogo == "ABRIR_BATALHA":
                 pygame.display.quit()
                 try:
-                    if getattr(sys, "frozen", False):
-                        base_pasta = Path(sys._MEIPASS)
-                    else:
-                        base_pasta = Path(__file__).resolve().parent
-                    caminho_batalha = base_pasta / "classes" / "batalha.py"
-                    runpy.run_path(str(caminho_batalha), run_name="__main__")
+                    caminho_batalha = os.path.join(os.path.dirname(__file__), "classes", "batalha.py")
+                    subprocess.run([sys.executable, caminho_batalha], cwd=os.path.dirname(__file__))
                 finally:
                     pygame.display.init()
                     tela = pygame.display.set_mode((LARGURA, ALTURA), pygame.SCALED)
