@@ -1,5 +1,7 @@
 import pygame
 import sys
+import subprocess
+import os
 
 pygame.init()#inicializar o pygame
 
@@ -28,6 +30,10 @@ botao_jogar.center = (LARGURA // 2, 315)
 
 #botao voltar da tela da placa
 botao_voltar = pygame.Rect(LARGURA - 145, ALTURA - 42, 130, 28)
+
+#botao batalha da tela da placa
+botao_batalha = pygame.Rect(0, 0, 180, 50)
+botao_batalha.center = (LARGURA // 2, 460)
 
 #frase embaixo
 texto_creditos = fonte_creditos.render("@EC2026.2", True, (0, 0, 0))
@@ -69,6 +75,17 @@ while rodando:
                 if botao_voltar.collidepoint(evento.pos):
                     progresso_zoom = 0.0
                     estado_jogo = "TELA_INICIAL"
+                elif botao_batalha.collidepoint(evento.pos):
+                    pygame.display.quit()
+                    try:
+                        subprocess.run(
+                            [sys.executable, os.path.join(os.path.dirname(__file__), "batalha.py")],
+                            cwd=os.path.dirname(__file__)
+                        )
+                    finally:
+                        pygame.display.init()
+                        tela = pygame.display.set_mode((LARGURA, ALTURA), pygame.SCALED)
+                        pygame.display.set_caption("CInMons: Destino Cinistro")
 
     #desenho da tela
     if estado_jogo == "TELA_INICIAL":
@@ -123,6 +140,17 @@ while rodando:
 
         texto_esc = fonte_esc.render("ESC - Voltar", True, (255, 255, 255))
         tela.blit(texto_esc, texto_esc.get_rect(center=botao_voltar.center))
+
+        #botao batalha
+        mouse_em_cima_batalha = botao_batalha.collidepoint(pos_mouse)
+        cor_fundo_batalha = (225, 65, 50) if mouse_em_cima_batalha else (180, 35, 35)
+        cor_borda_batalha = (255, 220, 120) if mouse_em_cima_batalha else (255, 255, 255)
+
+        pygame.draw.rect(tela, cor_fundo_batalha, botao_batalha, border_radius=8)
+        pygame.draw.rect(tela, cor_borda_batalha, botao_batalha, width=2, border_radius=8)
+
+        texto_batalha = fonte_botao.render("BATALHA", True, (255, 255, 255))
+        tela.blit(texto_batalha, texto_batalha.get_rect(center=botao_batalha.center))
         
 
     pygame.display.flip()

@@ -24,7 +24,7 @@ interface_batalha = carregar_img("assets/background/interface_batalha.png", (LAR
 caixa_ataques = carregar_img("assets/background/caixa_ataques.png", (990, 380))
 
 tamanho_cinmon = (600, 600)
-charcabras_frente = carregar_img("assets/cinmons/charcara_frente.png", tamanho_cinmon)
+charcabras_frente = carregar_img("assets/cinmons/charcabras_frente.png", tamanho_cinmon)
 charcabras_tras = carregar_img("assets/cinmons/charcabras_tras.png", tamanho_cinmon)
 charcara_tras = carregar_img("assets/cinmons/charcara_tras.png", tamanho_cinmon)
 charcara_frente = carregar_img("assets/cinmons/charcara_frente.png", tamanho_cinmon)
@@ -148,10 +148,22 @@ while rodando:
                 if evento.key == pygame.K_a: selecao = max(0, selecao - 1)
                 if evento.key == pygame.K_s: selecao = min(3, selecao + 2)
                 if evento.key == pygame.K_w: selecao = max(0, selecao - 2)
-                
-                if evento.key == pygame.K_RETURN and selecao == 0:
-                    tela_atual = "ataques"
-                    selecao_ataque = 0
+
+                if evento.key == pygame.K_RETURN or evento.key == pygame.K_SPACE:
+                    if selecao == 0:  # Lutar
+                        tela_atual = "ataques"
+                        selecao_ataque = 0
+
+                    if selecao == 1:  # Mochila
+                        mensagem_batalha = "Mochila *não implementado*"
+                        tela_atual = "mochila"
+
+                    if selecao == 2:  # Cinmon
+                        mensagem_batalha = "Cinmon *não implementado*"
+                        tela_atual = "cinmon"
+
+                    if selecao == 3:  # Fugir
+                        rodando = False
 
             elif tela_atual == "ataques":
                 if evento.key == pygame.K_d and selecao_ataque % 2 == 0: selecao_ataque += 1
@@ -176,6 +188,14 @@ while rodando:
                         mensagem_batalha = f"{especie_adversario} usou {ataques_adversario[ataque_escolhido]}!"
                         etapa_batalha = "ataque_adversario"
                         tempo_mensagem = pygame.time.get_ticks()
+
+            elif tela_atual == "mochila":
+                if evento.key in (pygame.K_SPACE, pygame.K_RETURN):
+                    tela_atual = "menu"
+
+            elif tela_atual == "cinmon":
+                if evento.key in (pygame.K_SPACE, pygame.K_RETURN):
+                    tela_atual = "menu"
 
             elif tela_atual == "fim_batalha" and evento.key == pygame.K_RETURN:
                 rodando = False
@@ -228,7 +248,7 @@ while rodando:
         tela.blit(sprite_adversario, (580, -10))
 
     # --- INTERFACE INFERIOR ---
-    if tela_atual in ["menu", "mensagem", "fim_batalha"]:
+    if tela_atual in ["menu", "mensagem", "mochila", "cinmon", "fim_batalha"]:
         pygame.draw.rect(tela, (0, 0, 0), (0, 395, 990, 210))
         tela.blit(interface_batalha, (0, 105)) 
         
