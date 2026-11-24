@@ -1,5 +1,6 @@
 import os
 import pygame
+from pathlib import Path
 from constants import (
     LARGURA,
     ALTURA,
@@ -15,11 +16,14 @@ from utils.helpers import desenhar_texto_quebrado, desenhar_pagina_controles
 
 class GerenciadorTelas:
     def __init__(self):
-        #imagens de fundo
-        self.fundo_titulo = pygame.image.load("assets/imagens/cenarios/tela_inicial.png").convert()
+        base_pasta = Path(__file__).resolve().parent.parent
+        caminho_tela_inicial = base_pasta / "assets" / "imagens" / "cenarios" / "tela_inicial.png"
+        caminho_placa = base_pasta / "assets" / "imagens" / "cenarios" / "Placa_cin.png"
+
+        self.fundo_titulo = pygame.image.load(caminho_tela_inicial).convert()
         self.fundo_titulo = pygame.transform.scale(self.fundo_titulo, (LARGURA, ALTURA))
 
-        self.fundo_placa = pygame.image.load("assets/imagens/cenarios/Placa_cin.png").convert()
+        self.fundo_placa = pygame.image.load(caminho_placa).convert()
         self.fundo_placa = pygame.transform.scale(self.fundo_placa, (LARGURA, ALTURA))
 
         #fontes
@@ -45,20 +49,21 @@ class GerenciadorTelas:
         self.caixa_dialogo = pygame.Rect(278, 332, 404, 220)
 
         #lista com os 3 personagens
+        pasta_pers = base_pasta / "assets" / "imagens" / "personagens"
         self.personagens = [
             {
                 "id": "feminino",
-                "sprite": self.carregar_imagem_personagem("assets/imagens/personagens/personagem_fem.png"),
+                "sprite": self.carregar_imagem_personagem(pasta_pers / "personagem_fem.png"),
                 "cor_placeholder": (215, 95, 130),
             },
             {
                 "id": "masculino",
-                "sprite": self.carregar_imagem_personagem("assets/imagens/personagens/personagem_masc.png"),
+                "sprite": self.carregar_imagem_personagem(pasta_pers / "personagem_masc.png"),
                 "cor_placeholder": (75, 145, 220),
             },
             {
                 "id": "neutro",
-                "sprite": self.carregar_imagem_personagem("assets/imagens/personagens/personagem_neutro.png"),
+                "sprite": self.carregar_imagem_personagem(pasta_pers / "personagem_neutro.png"),
                 "cor_placeholder": (145, 110, 215),
             },
         ]

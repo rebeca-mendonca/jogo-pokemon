@@ -2,6 +2,8 @@ import pygame
 
 class Jogador:
     def __init__(self, nome="Estudante", genero="neutro"):
+        self.nome = nome
+        self.genero = genero
         #coordenadaa
         self.player_x = 200
         self.player_y = 300
@@ -10,38 +12,42 @@ class Jogador:
         self.y_direction = 0
 
     def draw_player(self, screen):
-        #inicio do desenvolvimento do formato do personagem
-        pygame.draw.rect(screen, 'gray', [self.player_x, self.player_y, 100, 100], 0, 5)
+        image = animations[direction][current_frame]
+        #mostra na tela
+        screen.blit(image, (player_x, player_y))
 
     def movimento(self, event):
         if event.type == pygame.KEYDOWN:
-            if event.key in (pygame.K_RIGHT, pygame.K_d):
-                self.x_direction = 1
+            if event.key == pygame.K_RIGHT or event.key == pygame.K_d:
+                x_direction = 1
+                direction = 'right'
 
-            elif event.key in (pygame.K_LEFT, pygame.K_a):
-                self.x_direction = -1    
+            elif event.key == pygame.K_LEFT or event.key == pygame.K_a:
+                x_direction = -1
+                direction = 'left'
 
             #as coordenadas 0 comecam no canto esquerdo superior da tela
-            elif event.key in (pygame.K_UP, pygame.K_w):
-                self.y_direction = -1
+            elif event.key == pygame.K_UP or event.key == pygame.K_w:
+                y_direction = -1
+                direction = 'up'
 
-            elif event.key in (pygame.K_DOWN, pygame.K_s):
-                self.y_direction = 1
+            elif event.key == pygame.K_DOWN or event.key == pygame.K_s:
+                y_direction = 1
+                direction = 'down'
 
         if event.type == pygame.KEYUP:
             #qnd nn estiver precionando a tecla
-            if event.key in (pygame.K_RIGHT, pygame.K_d):
-                self.x_direction = 0
+            if event.key == pygame.K_RIGHT or event.key == pygame.K_d:
+                x_direction = 0
             
-            elif event.key in (pygame.K_LEFT, pygame.K_a):
-                self.x_direction = 0    
+            elif event.key == pygame.K_LEFT or event.key == pygame.K_a:
+                x_direction = 0   
             
-            #as coordenadas 0 comecam no canto esquerdo superior da tela
-            elif event.key in (pygame.K_UP, pygame.K_w):
-                self.y_direction = 0
+            elif event.key == pygame.K_UP or event.key == pygame.K_w:
+                y_direction = 0
             
-            elif event.key in (pygame.K_DOWN, pygame.K_s):
-                self.y_direction = 0
+            elif event.key == pygame.K_DOWN or event.key == pygame.K_s:
+                y_direction = 0
 
     def velocidade(self):
         self.player_x += self.player_speed * self.x_direction
