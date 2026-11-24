@@ -145,13 +145,64 @@ alvo_impacto = None
 inicio_impacto = 0
 rodando = True
 
+areas_opcoes = [
+    pygame.Rect(610, 415, 150, 45),
+    pygame.Rect(760, 415, 150, 45),
+    pygame.Rect(610, 465, 150, 45),
+    pygame.Rect(760, 465, 150, 45),
+]
+areas_ataques = [
+    pygame.Rect(30, 410, 280, 45),
+    pygame.Rect(330, 410, 280, 45),
+    pygame.Rect(30, 465, 280, 45),
+    pygame.Rect(330, 465, 280, 45),
+]
+
+def ativar_opcao_menu():
+    global tela_atual, selecao_ataque, mensagem_batalha, rodando
+
+    if selecao == 0:
+        tela_atual = "ataques"
+        selecao_ataque = 0
+    elif selecao == 1:
+        mensagem_batalha = "Mochila *não implementado*"
+        tela_atual = "mochila"
+    elif selecao == 2:
+        mensagem_batalha = "Cinmon *não implementado*"
+        tela_atual = "cinmon"
+    elif selecao == 3:
+        rodando = False
+
+def ativar_ataque():
+    global mensagem_batalha, etapa_batalha, tela_atual, tempo_mensagem
+
+    qr_ataques[selecao_ataque] -= 1
+    mensagem_batalha = f"{especie_jogador} usou {ataques[selecao_ataque]}!"
+    etapa_batalha = "ataque_jogador"
+    tela_atual = "mensagem"
+    tempo_mensagem = pygame.time.get_ticks()
+
+def avancar_mensagem():
+    global ataque_escolhido, mensagem_batalha, etapa_batalha, tempo_mensagem
+
+    atqs_disponiveis = [i for i, qr in enumerate(qr_adversario) if qr > 0]
+    if atqs_disponiveis:
+        ataque_escolhido = random.choice(atqs_disponiveis)
+        qr_adversario[ataque_escolhido] -= 1
+        mensagem_batalha = f"{especie_adversario} usou {ataques_adversario[ataque_escolhido]}!"
+        etapa_batalha = "ataque_adversario"
+        tempo_mensagem = pygame.time.get_ticks()
+
 # --- 5. LOOP PRINCIPAL ---
 while rodando:
     for evento in pygame.event.get():
         if evento.type == pygame.QUIT:
             rodando = False
 
-        if evento.type == pygame.KEYDOWN:
+        if evento.type == pygame.KEYDOWN and evento.key == pygame.K_ESCAPE:
+            rodando = False
+
+        elif evento.type == pygame.KEYDOWN:
             if tela_atual == "menu":
                 if evento.key == pygame.K_d: selecao = min(3, selecao + 1)
                 if evento.key == pygame.K_a: selecao = max(0, selecao - 1)
@@ -159,20 +210,7 @@ while rodando:
                 if evento.key == pygame.K_w: selecao = max(0, selecao - 2)
 
                 if evento.key in (pygame.K_RETURN, pygame.K_SPACE):
-                    if selecao == 0:  # Lutar
-                        tela_atual = "ataques"
-                        selecao_ataque = 0
-
-                    if selecao == 1:  # Mochila
-                        mensagem_batalha = "Mochila *não implementado*"
-                        tela_atual = "mochila"
-
-                    if selecao == 2:  # Cinmon
-                        mensagem_batalha = "Cinmon *não implementado*"
-                        tela_atual = "cinmon"
-
-                    if selecao == 3:  # Fugir
-                        rodando = False
+                    ativar_opcao_menu()
 
             elif tela_atual == "ataques":
                 if evento.key == pygame.K_d and selecao_ataque % 2 == 0: selecao_ataque += 1
@@ -181,22 +219,11 @@ while rodando:
                 if evento.key == pygame.K_w and selecao_ataque >= 2: selecao_ataque -= 2
                 
                 if qr_ataques[selecao_ataque] > 0 and evento.key in (pygame.K_RETURN, pygame.K_SPACE):
-                    qr_ataques[selecao_ataque] -= 1
-                    mensagem_batalha = f"{especie_jogador} usou {ataques[selecao_ataque]}!"
-                    etapa_batalha = "ataque_jogador"
-                    tela_atual = "mensagem"
-                    tempo_mensagem = pygame.time.get_ticks()
+                    ativar_ataque()
 
             elif tela_atual == "mensagem":
                 if evento.key in (pygame.K_RETURN, pygame.K_SPACE) and etapa_batalha == "esperando_jogador":
-                    # Turno do adversário
-                    atqs_disponiveis = [i for i, qr in enumerate(qr_adversario) if qr > 0]
-                    if atqs_disponiveis:
-                        ataque_escolhido = random.choice(atqs_disponiveis)
-                        qr_adversario[ataque_escolhido] -= 1
-                        mensagem_batalha = f"{especie_adversario} usou {ataques_adversario[ataque_escolhido]}!"
-                        etapa_batalha = "ataque_adversario"
-                        tempo_mensagem = pygame.time.get_ticks()
+                    avancar_mensagem()
 
             elif tela_atual == "mochila":
                 if evento.key in (pygame.K_RETURN, pygame.K_SPACE):
@@ -207,6 +234,27 @@ while rodando:
                     tela_atual = "menu"
 
             elif tela_atual == "fim_batalha" and evento.key in (pygame.K_RETURN, pygame.K_SPACE):
+                rodando = False
+
+        elif evento.type == pygame.MOUSEBUTTONDOWN and evento.button == 1:
+            if tela_atual == "menu":
+                for indice, area in enumerate(areas_opcoes):
+                    if area.collidepoint(evento.pos):
+                        selecao = indice
+                        ativar_opcao_menu()
+                        break
+            elif tela_atual == "ataques":
+                for indice, area in enumerate(areas_ataques):
+                    if area.collidepoint(evento.pos):
+                        selecao_ataque = indice
+                        if qr_ataques[selecao_ataque] > 0:
+                            ativar_ataque()
+                        break
+            elif tela_atual == "mensagem" and etapa_batalha == "esperando_jogador":
+                avancar_mensagem()
+            elif tela_atual in ("mochila", "cinmon"):
+                tela_atual = "menu"
+            elif tela_atual == "fim_batalha":
                 rodando = False
 
     # Lógica de Tempo (Dano)
