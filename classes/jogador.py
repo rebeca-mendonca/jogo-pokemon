@@ -10,36 +10,41 @@ class Jogador:
         self.y_direction = 0
 
     def draw_player(self, screen):
-        #inicio do desenvolvimento do formato do personagem
-        pygame.draw.rect(screen, 'gray', [self.player_x, self.player_y, 100, 100], 0, 5)
+        image = animations[direction][current_frame]
+        #mostra na tela
+        screen.blit(image, (player_x, player_y))
 
     def movimento(self, event):
         if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_RIGHT:
+            if event.key == pygame.K_RIGHT or event.key == pygame.K_d:
                 x_direction = 1
+                direction = 'right'
 
-            elif event.key == pygame.K_LEFT:
-                x_direction = -1    
+            elif event.key == pygame.K_LEFT or event.key == pygame.K_a:
+                x_direction = -1
+                direction = 'left'
 
             #as coordenadas 0 comecam no canto esquerdo superior da tela
-            elif event.key == pygame.K_UP:
+            elif event.key == pygame.K_UP or event.key == pygame.K_w:
                 y_direction = -1
+                direction = 'up'
 
-            elif event.key == pygame.K_DOWN:
+            elif event.key == pygame.K_DOWN or event.key == pygame.K_s:
                 y_direction = 1
+                direction = 'down'
 
         if event.type == pygame.KEYUP:
             #qnd nn estiver precionando a tecla
-            if event.key == pygame.K_RIGHT:
+            if event.key == pygame.K_RIGHT or event.key == pygame.K_d:
                 x_direction = 0
             
-            elif event.key == pygame.K_LEFT:
+            elif event.key == pygame.K_LEFT or event.key == pygame.K_a:
                 x_direction = 0   
             
-            elif event.key == pygame.K_UP:
+            elif event.key == pygame.K_UP or event.key == pygame.K_w:
                 y_direction = 0
             
-            elif event.key == pygame.K_DOWN:
+            elif event.key == pygame.K_DOWN or event.key == pygame.K_s:
                 y_direction = 0
 
     def velocidade(self):
