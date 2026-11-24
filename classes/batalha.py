@@ -1,5 +1,6 @@
 import pygame
 import random
+import sys
 from pathlib import Path
 
 pygame.init()
@@ -18,7 +19,10 @@ def carregar_img(caminho, tamanho=None):
     return img
 
 # Carregando as imagens com a nova função
-base_pasta = Path(__file__).resolve().parent.parent
+if getattr(sys, "frozen", False):
+    base_pasta = Path(sys._MEIPASS)
+else:
+    base_pasta = Path(__file__).resolve().parent.parent
 assets = base_pasta / "assets" / "imagens"
 
 fundo = carregar_img(assets / "background" / "background_batalha.png", (LARGURA, ALTURA))

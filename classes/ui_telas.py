@@ -1,4 +1,5 @@
 import pygame
+import sys
 from pathlib import Path
 from constants import (
     LARGURA,
@@ -15,7 +16,10 @@ from utils.helpers import desenhar_texto_quebrado, desenhar_pagina_controles
 
 class GerenciadorTelas:
     def __init__(self):
-        base_pasta = Path(__file__).resolve().parent.parent
+        if getattr(sys, "frozen", False):
+            base_pasta = Path(sys._MEIPASS)
+        else:
+            base_pasta = Path(__file__).resolve().parent.parent
         caminho_tela_inicial = base_pasta / "assets" / "imagens" / "cenarios" / "tela_inicial.png"
         caminho_placa = base_pasta / "assets" / "imagens" / "cenarios" / "Placa_cin.png"
 
