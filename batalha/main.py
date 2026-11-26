@@ -17,20 +17,35 @@ def carregar_img(caminho, tamanho=None):
     return img
 
 # Carregando as imagens com a nova função
-fundo = carregar_img("assets/background/background_batalha.png", (LARGURA, ALTURA))
-barra_status_adv = carregar_img("assets/background/barras_status_adv.png", (500, 200))
-barra_status_jgd = carregar_img("assets/background/barras_status_jgd.png", (550, 200))
-interface_batalha = carregar_img("assets/background/interface_batalha.png", (LARGURA, 450))
-caixa_ataques = carregar_img("assets/background/caixa_ataques.png", (990, 380))
+fundo = carregar_img("assets/imagens/background/background_batalha.png", (LARGURA, ALTURA))
+barra_status_adv = carregar_img("assets/imagens/background/barras_status_adv.png", (500, 200))
+barra_status_jgd = carregar_img("assets/imagens/background/barras_status_jgd.png", (550, 200))
+interface_batalha = carregar_img("assets/imagens/background/interface_batalha.png", (LARGURA, 450))
+caixa_ataques = carregar_img("assets/imagens/background/caixa_ataques.png", (990, 380))
 
 tamanho_cinmon = (600, 600)
-charcabras_frente = carregar_img("assets/cinmons/charcara_frente.png", tamanho_cinmon)
-charcabras_tras = carregar_img("assets/cinmons/charcabras_tras.png", tamanho_cinmon)
-charcara_tras = carregar_img("assets/cinmons/charcara_tras.png", tamanho_cinmon)
-charcara_frente = carregar_img("assets/cinmons/charcara_frente.png", tamanho_cinmon)
 
-vampteuth_frente = carregar_img("assets/cinmons/vampteuth_frente.png", (300, 300))
-vampteuth_tras = carregar_img("assets/cinmons/vampteuth_tras.png", (300, 300))
+#cinmon fogo
+charcabras_frente = carregar_img("assets/imagens/cinmons/charcabras_frente.png", (200, 200))
+charcabras_tras = carregar_img("assets/imagens/cinmons/charcabras_tras.png", (300, 300))
+charcara_tras = carregar_img("assets/imagens/cinmons/charcara_tras.png", tamanho_cinmon)
+charcara_frente = carregar_img("assets/imagens/cinmons/charcara_frente.png", (400, 400))
+foguara_tras = carregar_img("assets/imagens/cinmons/foguara_tras.png", (500, 500))
+foguara_frente = carregar_img("assets/imagens/cinmons/foguara_frente.png", (300, 300))
+#cinmon agua
+vampteuth_frente = carregar_img("assets/imagens/cinmons/vampteuth_frente.png", (300, 300))
+vampteuth_tras = carregar_img("assets/imagens/cinmons/vampteuth_tras.png", (400, 400))
+teuthis_tras = carregar_img("assets/imagens/cinmons/teuthis_tras.png", tamanho_cinmon)
+teuthis_frente = carregar_img("assets/imagens/cinmons/teuthis_frente.png", (400, 400))
+furia_tras = carregar_img("assets/imagens/cinmons/furia_tras.png", (500, 500))
+furia_frente = carregar_img("assets/imagens/cinmons/furia_frente.png", (300, 300))
+#cinmon grama
+flormaja_tras = carregar_img("assets/imagens/cinmons/flormaja_tras.png", (300, 300))
+flormaja_frente = carregar_img("assets/imagens/cinmons/flormaja_frente.png", (200, 200))
+lagartixe_tras = carregar_img("assets/imagens/cinmons/lagartixe_tras.png", (300, 300))
+lagartixe_frente = carregar_img("assets/imagens/cinmons/lagartixe_frente.png", (200, 200))
+teiu_tras = carregar_img("assets/imagens/cinmons/teiu_tras.png", (400, 400))
+teiu_frente = carregar_img("assets/imagens/cinmons/teiu_frente.png", (300, 300))
 
 # --- 2. DADOS DO JOGO ---
 fonte = pygame.font.Font(None, 40)
@@ -45,7 +60,9 @@ especies_cinmon = {
             1: {"nome": "Brasa", "QR_max": 25, "dano": 15},
             5: {"nome": "Penas de Lava", "QR_max": 20, "dano": 20},
             10: {"nome": "Lança-chamas", "QR_max": 10, "dano": 30},
-        }
+        },
+        "posicao_jogador": (30, 150),
+        "posicao_adversario": (620, 50)
     },
     "Charcará": {
         "tipo": "Fogo", "hp_base": 15,
@@ -55,7 +72,21 @@ especies_cinmon = {
             5: {"nome": "Penas de Lava", "QR_max": 20, "dano": 20},
             10: {"nome": "Lança-chamas", "QR_max": 10, "dano": 30},
             25: {"nome": "Chute em Chamas", "QR_max": 5, "dano": 50}
-        }
+        },
+        "posicao_jogador": (-50, 60),
+        "posicao_adversario": (530, -60)
+    },
+    "Foguará": {
+        "tipo": "Fogo", "hp_base": 15,
+        "sprite_jogador": foguara_tras, "sprite_adversario": foguara_frente,
+        "ataques_aprendidos": {
+            1: {"nome": "Brasa", "QR_max": 25, "dano": 15},
+            5: {"nome": "mordida flamejante", "QR_max": 20, "dano": 20},
+            10: {"nome": "Lança-chamas", "QR_max": 10, "dano": 30},
+            25: {"nome": "Chute em Chamas", "QR_max": 5, "dano": 50}     
+        },
+        "posicao_jogador": (-50, 70),
+        "posicao_adversario": (590, -10)
     },
     "Vampteuth": {
         "tipo": "Água", "hp_base": 17,
@@ -65,8 +96,70 @@ especies_cinmon = {
             5: {"nome": "Bolhas de Energia", "QR_max": 20, "dano": 20},
             10: {"nome": "Jato d'Agua", "QR_max": 10, "dano": 30},
             25: {"nome": "Último Abraço", "QR_max": 5, "dano": 55}
-        }
-    }
+        },
+        "posicao_jogador": (0, 140),
+        "posicao_adversario": (580, -10)
+    },
+    "Teuthis": {
+            "tipo": "Água", "hp_base": 17,
+            "sprite_jogador": teuthis_tras, "sprite_adversario": teuthis_frente,
+            "ataques_aprendidos": {
+                1: {"nome": "Nuvem Paralisante", "QR_max": 25, "dano": 15},
+                5: {"nome": "Bolhas de Energia", "QR_max": 20, "dano": 20},
+                10: {"nome": "Jato d'Agua", "QR_max": 10, "dano": 30},
+                25: {"nome": "Último Abraço", "QR_max": 5, "dano": 55}
+            },
+            "posicao_jogador": (-50, 60),
+            "posicao_adversario": (550, -40)
+        },
+        "Fúria": {
+                "tipo": "Água", "hp_base": 16,
+                "sprite_jogador": furia_tras, "sprite_adversario": furia_frente,
+                "ataques_aprendidos": {
+                    1: {"nome": "mordida", "QR_max": 25, "dano": 15},
+                    5: {"nome": "Bolha", "QR_max": 20, "dano": 20},
+                    10: {"nome": "Cabeçada", "QR_max": 10, "dano": 30},
+                    25: {"nome": "jato d'Agua", "QR_max": 5, "dano": 50}
+                },
+            "posicao_jogador": (-50, 100),
+            "posicao_adversario": (580, -10)
+            },
+        "Lagartixe": {
+                    "tipo": "Grama", "hp_base": 18,
+                    "sprite_jogador": lagartixe_tras, "sprite_adversario": lagartixe_frente,
+                    "ataques_aprendidos": {
+                        1: {"nome": "mordida", "QR_max": 25, "dano": 15},
+                        5: {"nome": "chicote de vinha", "QR_max": 20, "dano": 20},
+                        10: {"nome": "lança-pinho", "QR_max": 10, "dano": 30},
+                        25: {"nome": "Navalha de folha", "QR_max": 5, "dano": 50}
+                        },
+            "posicao_jogador": (40, 200),
+            "posicao_adversario": (630, 40)
+            },
+        "Teiu": {
+                    "tipo": "Grama", "hp_base": 18,
+                    "sprite_jogador": teiu_tras, "sprite_adversario": teiu_frente,
+                    "ataques_aprendidos": {
+                    1: {"nome": "mordida", "QR_max": 25, "dano": 15},
+                    5: {"nome": "chicote de vinha", "QR_max": 20, "dano": 20},
+                    10: {"nome": "lança-pinho", "QR_max": 10, "dano": 30},
+                    25: {"nome": "Navalha de folha", "QR_max": 5, "dano": 50}
+                        },
+            "posicao_jogador": (-10, 150),
+            "posicao_adversario": (580, -10)
+            },
+        "Flormaja": {
+                    "tipo": "Grama", "hp_base": 18,
+                    "sprite_jogador": flormaja_tras, "sprite_adversario": flormaja_frente,
+                    "ataques_aprendidos": {
+                    1: {"nome": "polém sonífero", "QR_max": 25, "dano": 15},
+                    5: {"nome": "chicote de vinha", "QR_max": 20, "dano": 20},
+                    10: {"nome": "lança-pinho", "QR_max": 10, "dano": 30},
+                    20: {"nome": "Navalha de folha", "QR_max": 5, "dano": 50}
+                                },
+            "posicao_jogador": (20, 200),
+            "posicao_adversario": (630, 50)
+                    }
 }
 
 # --- 3. FUNÇÕES AUXILIARES ---
@@ -90,9 +183,9 @@ def ataques_disponiveis(especie, nivel):
     return [dados for niv, dados in ataques.items() if nivel >= niv]
 
 # config atual
-especie_jogador = "Charcará"
+especie_jogador = "Flormaja"
 nivel_jogador = 25
-especie_adversario = "Vampteuth"
+especie_adversario = "Flormaja"
 nivel_adversario = 25
 
 # Setup Jogador
@@ -107,6 +200,7 @@ cinmon_jogador = {
     "hp": round(especies_cinmon[especie_jogador]["hp_base"] + 3 * nivel_jogador)
 }
 sprite_jogador = especies_cinmon[especie_jogador]["sprite_jogador"]
+posicao_jogador = especies_cinmon[especie_jogador]["posicao_jogador"]
 
 # Setup Adversário
 dados_ataques_adversario = ataques_disponiveis(especie_adversario, nivel_adversario)
@@ -119,6 +213,7 @@ cinmon_adversario = {
     "hp": round(especies_cinmon[especie_adversario]["hp_base"] + 3 * nivel_adversario)
 }
 sprite_adversario = especies_cinmon[especie_adversario]["sprite_adversario"]
+posicao_adversario = especies_cinmon[especie_adversario]["posicao_adversario"]
 
 # Textos pré-renderizados
 textos_opcoes = [fonte.render(op, True, (0, 0, 0)) for op in ["LUTAR", "MOCHILA", "CINMON", "FUGIR"]]
@@ -214,18 +309,20 @@ while rodando:
     tela.blit(barra_status_adv, (-10, -10))
     tela.blit(barra_status_jgd, (420, 250))
 
-    # Sprites
+        # Sprites
     tempo_derrota = pygame.time.get_ticks() - inicio_derrota
-    
-    if cinmon_derrotado == "jogador" and tempo_derrota < duracao_branco + duracao_desaparecimento:
-        tela.blit(efeito_derrota(sprite_jogador, tempo_derrota), (-50, 60))
-    elif cinmon_derrotado != "jogador":
-        tela.blit(sprite_jogador, (-50, 60))
 
+    # CinMon do jogador
+    if cinmon_derrotado == "jogador" and tempo_derrota < duracao_branco + duracao_desaparecimento:
+        tela.blit(efeito_derrota(sprite_jogador, tempo_derrota), posicao_jogador)
+    elif cinmon_derrotado != "jogador":
+        tela.blit(sprite_jogador, posicao_jogador)
+
+    # CinMon adversário
     if cinmon_derrotado == "adversario" and tempo_derrota < duracao_branco + duracao_desaparecimento:
-        tela.blit(efeito_derrota(sprite_adversario, tempo_derrota), (580, -10))
+        tela.blit(efeito_derrota(sprite_adversario, tempo_derrota), posicao_adversario)
     elif cinmon_derrotado != "adversario":
-        tela.blit(sprite_adversario, (580, -10))
+        tela.blit(sprite_adversario, posicao_adversario)
 
     # --- INTERFACE INFERIOR ---
     if tela_atual in ["menu", "mensagem", "fim_batalha"]:
