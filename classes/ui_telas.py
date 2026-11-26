@@ -45,41 +45,38 @@ class GerenciadorTelas:
         self.texto_creditos = self.fonte_creditos.render("@EC2026.2", True, (0, 0, 0))
         self.rect_creditos = self.texto_creditos.get_rect(center=(LARGURA // 2, 596))
 
-        #caixa principal que fica dentro da placa
+        #caixa q fica dentro da placa
         self.caixa_dialogo = pygame.Rect(278, 332, 404, 220)
+        self.tam_card = 100
+        self.tam_img = 112
 
-        #lista com os 3 personagens
+        #lista com os 2 personagens
         pasta_pers = base_pasta / "assets" / "imagens" / "personagens"
         self.personagens = [
             {
-                "id": "feminino",
-                "sprite": self.carregar_imagem_personagem(pasta_pers / "personagem_fem.png"),
-                "cor_placeholder": (215, 95, 130),
-            },
-            {
                 "id": "masculino",
-                "sprite": self.carregar_imagem_personagem(pasta_pers / "personagem_masc.png"),
+                "sprite": self.carregar_imagem_personagem(pasta_pers / "sekecao_personagem1.png"),
                 "cor_placeholder": (75, 145, 220),
             },
             {
-                "id": "neutro",
-                "sprite": self.carregar_imagem_personagem(pasta_pers / "personagem_neutro.png"),
-                "cor_placeholder": (145, 110, 215),
+                "id": "feminino",
+                "sprite": self.carregar_imagem_personagem(pasta_pers / "selecao_personagem2.png"),
+                "cor_placeholder": (215, 95, 130),
             },
         ]
 
         self.indice_personagem = 0
         self.personagem_escolhido = None
 
-        #criando os 3 quadrados lado a lado
+        #2 quadrado centralizado
         self.cards_personagem = []
-        larg_card = 88
-        alt_card = 88
-        espaco = 26
-        inicio_x = self.caixa_dialogo.left + (self.caixa_dialogo.width - (3 * larg_card + 2 * espaco)) // 2
-        y_cards = self.caixa_dialogo.top + 48
+        larg_card = self.tam_card
+        alt_card = self.tam_card
+        espaco = 40
+        inicio_x = self.caixa_dialogo.left + (self.caixa_dialogo.width - (2 * larg_card + espaco)) // 2
+        y_cards = self.caixa_dialogo.top + 44
 
-        for i in range(3):
+        for i in range(2):
             x = inicio_x + i * (larg_card + espaco)
             quadrado = pygame.Rect(x, y_cards, larg_card, alt_card)
             self.cards_personagem.append(quadrado)
@@ -98,17 +95,11 @@ class GerenciadorTelas:
         self.indice_guia = 0
 
     def carregar_imagem_personagem(self, caminho):
-        #verifica se o arquivo existe antes de tentar abrir
+        #precisa verificar se o arquivo existe antes de tentar abrir
         if not os.path.exists(caminho):
             return None
         img = pygame.image.load(caminho).convert_alpha()
-        larg, alt = img.get_size()
-        #se for spritesheet pega so o primeiro quadradinho
-        if larg >= 64 and alt >= 64:
-            frame = img.subsurface((0, 0, larg // 4, alt // 4))
-        else:
-            frame = img
-        return pygame.transform.scale(frame, (80, 80))
+        return pygame.transform.scale(img, (self.tam_img, self.tam_img))
 
     def iniciar_zoom(self):
         self.progresso_zoom = 0.0
@@ -144,6 +135,7 @@ class GerenciadorTelas:
             return "TELA_INICIAL"
 
         if evento.type == pygame.MOUSEBUTTONDOWN and evento.button == 1:
+    
             if self.botao_voltar.collidepoint(evento.pos):
                 self.progresso_zoom = 0.0
                 return "TELA_INICIAL"
@@ -154,6 +146,7 @@ class GerenciadorTelas:
 
             if self.rect_input_nome.collidepoint(evento.pos):
                 self.input_nome_ativo = True
+
             else:
                 self.input_nome_ativo = False
 
@@ -251,7 +244,7 @@ class GerenciadorTelas:
             selecionado = (i == self.indice_personagem)
             hover = card.collidepoint(pos_mouse)
 
-            #muda cor de fundo e borda ao passar o mouse ou selecionar
+            #cores
             if selecionado:
                 cor_card = (52, 60, 88)
                 cor_borda = COR_TITULO
@@ -265,15 +258,17 @@ class GerenciadorTelas:
                 cor_borda = (85, 92, 115)
                 espessura = 1
 
-            pygame.draw.rect(tela, cor_card, card, border_radius=8)
-            pygame.draw.rect(tela, cor_borda, card, width=espessura, border_radius=8)
-
-            #espaco onde vai ficar a imagem da Lara
-            if pers["sprite"] != None:
+            pygame.draw.rect(tela, cor_card, card, border_radius=6)#fundo do card
+            
+            tela.set_clip(card)
+            if pers["sprite"] is not None:
                 tela.blit(pers["sprite"], pers["sprite"].get_rect(center=card.center))
             else:
                 txt_img = self.fonte_pequena.render("IMG", True, pers["cor_placeholder"])
                 tela.blit(txt_img, txt_img.get_rect(center=card.center))
+            tela.set_clip(None)
+            
+            pygame.draw.rect(tela, cor_borda, card, width=espessura, border_radius=6)#borda por cima da iaagem
 
         #campo de digitar o nome
         if self.input_nome_ativo:
@@ -296,7 +291,7 @@ class GerenciadorTelas:
             txt_input = self.fonte_pequena.render("Digite seu nome..." + cursor, True, (130, 135, 155))
         tela.blit(txt_input, txt_input.get_rect(midleft=(self.rect_input_nome.left + 8, self.rect_input_nome.centery)))
 
-        #botao confirmar (fica verde quando tem nome digitado)
+        #botao confirmar q fica verde quando tem nome digitado
         pode_confirmar = len(self.nome_jogador.strip()) > 0
         hover_conf = self.btn_confirmar_pers.collidepoint(pos_mouse)
         if pode_confirmar:

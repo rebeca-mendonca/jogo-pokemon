@@ -1,10 +1,9 @@
 import pygame
 import sys
-import subprocess
-import os
 from constants import LARGURA, ALTURA, FPS
 from classes.ui_telas import GerenciadorTelas
 from classes.jogador import Jogador
+from classes.mapa import Mapa
 
 pygame.init()
 
@@ -14,6 +13,7 @@ clock = pygame.time.Clock()
 
 ui = GerenciadorTelas()
 jogador = Jogador()
+mapa= Mapa()
 estado_jogo = "TELA_INICIAL"
 
 rodando = True
@@ -36,11 +36,17 @@ while rodando:
 
         elif estado_jogo == "HISTORIA_INICIAL":
             if evento.type == pygame.KEYDOWN and evento.key in (pygame.K_RETURN, pygame.K_SPACE):
+                #perso no ponto inicial
+                jogador.player_x, jogador.player_y = mapa.ponto_inicial
+                jogador.x_direction = 0
+                jogador.y_direction = 0
                 estado_jogo = "MAPA"
 
         elif estado_jogo == "MAPA":
             jogador.movimento(evento)
             if evento.type == pygame.KEYDOWN and evento.key == pygame.K_ESCAPE:
+                jogador.x_direction = 0#zera o movimento p nao sair andando sozinha quando voltar da pausa
+                jogador.y_direction = 0
                 estado_jogo = ui.abrir_guia_pausa()
 
         elif estado_jogo == "GUIA_PAUSA":
@@ -66,19 +72,14 @@ while rodando:
 
     elif estado_jogo == "MAPA":
         jogador.velocidade()
-        tela.fill((30, 55, 40))
-        jogador.draw_player(tela)
+        mapa.atualizar(jogador)
+        mapa.desenhar(tela, jogador)
 
-        hud = ui.fonte_texto_caixa.render(
-            f"ESC: pausa e menu",
-            True,
-            (255, 255, 255),
-        )
+        hud = ui.fonte_texto_caixa.render("ESC: pausa e menu", True, (255, 255, 255))
         tela.blit(hud, (20, 20))
 
     elif estado_jogo == "GUIA_PAUSA":
-        tela.fill((30, 55, 40)) #fundo provisorio enquanto o mapa nao entra por baixo
-        jogador.draw_player(tela)
+        mapa.desenhar(tela, jogador)
         ui.desenhar_guia_pausa(tela, pos_mouse)
 
     pygame.display.flip()

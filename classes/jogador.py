@@ -19,35 +19,35 @@ class Jogador:
     def movimento(self, event):
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_RIGHT or event.key == pygame.K_d:
-                x_direction = 1
-                direction = 'right'
+                self.x_direction = 1
+                self.direction = 'right'
 
             elif event.key == pygame.K_LEFT or event.key == pygame.K_a:
-                x_direction = -1
-                direction = 'left'
+                self.x_direction = -1
+                self.direction = 'left'
 
             #as coordenadas 0 comecam no canto esquerdo superior da tela
             elif event.key == pygame.K_UP or event.key == pygame.K_w:
-                y_direction = -1
-                direction = 'up'
+                self.y_direction = -1
+                self.direction = 'up'
 
             elif event.key == pygame.K_DOWN or event.key == pygame.K_s:
-                y_direction = 1
-                direction = 'down'
+                self.y_direction = 1
+                self.direction = 'down'
 
         if event.type == pygame.KEYUP:
             #qnd nn estiver precionando a tecla
             if event.key == pygame.K_RIGHT or event.key == pygame.K_d:
-                x_direction = 0
-            
+                self.x_direction = 0
+
             elif event.key == pygame.K_LEFT or event.key == pygame.K_a:
-                x_direction = 0   
-            
+                self.x_direction = 0
+
             elif event.key == pygame.K_UP or event.key == pygame.K_w:
-                y_direction = 0
-            
+                self.y_direction = 0
+
             elif event.key == pygame.K_DOWN or event.key == pygame.K_s:
-                y_direction = 0
+                self.y_direction = 0
 
     def velocidade(self):
         self.player_x += self.player_speed * self.x_direction

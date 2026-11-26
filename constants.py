@@ -30,3 +30,12 @@ PAGINAS_AJUDA = [
         ),
     },
 ]
+
+#mapa epersonagem
+PONTO_INICIAL = (560, 690)
+ALTURA_SPRITE = 64
+VELOCIDADE_ANIMACAO = 0.15
+
+#cards da selecao de personagem
+TAM_CARD = 100
+TAM_IMG = 112

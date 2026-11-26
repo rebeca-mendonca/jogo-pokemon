@@ -94,3 +94,10 @@ Primeiro teste localmente com `python main.py`. Depois que o protótipo estiver
 estável, vamos adaptar o loop principal para o modo assíncrono exigido pelo
 Pygbag e preparar a publicação. O GitHub guarda o código; GitHub Pages hospeda
 os arquivos web gerados, não executa Python/Pygame diretamente.
+
+## Bibliotecas utilizada
+
+pygame (pygame-ce)
+sys
+os
+pathlib
