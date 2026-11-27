@@ -18,10 +18,13 @@ def carregar_img(caminho, tamanho=None):
 
 # Carregando as imagens com a nova função
 fundo = carregar_img("assets/imagens/background/background_batalha.png", (LARGURA, ALTURA))
+mochila = carregar_img("assets/imagens/background/mochila.webp", (LARGURA, ALTURA))
 barra_status_adv = carregar_img("assets/imagens/background/barras_status_adv.png", (500, 200))
 barra_status_jgd = carregar_img("assets/imagens/background/barras_status_jgd.png", (550, 200))
 interface_batalha = carregar_img("assets/imagens/background/interface_batalha.png", (LARGURA, 450))
 caixa_ataques = carregar_img("assets/imagens/background/caixa_ataques.png", (990, 380))
+pocao_img= carregar_img("assets/imagens/background/pocao.png", (100, 100))
+cinball_img = carregar_img("assets/imagens/background/cinbaball.png", (100, 100))
 
 tamanho_cinmon = (600, 600)
 
@@ -182,6 +185,17 @@ def ataques_disponiveis(especie, nivel):
     ataques = especies_cinmon[especie]["ataques_aprendidos"]
     return [dados for niv, dados in ataques.items() if nivel >= niv]
 
+def chance_fugir(nivel_jogador, nivel_adversario):
+    chance = 50 + (nivel_jogador - nivel_adversario) * 2
+
+    if chance > 90:
+        chance = 90
+
+    if chance < 10:
+        chance = 10
+
+    return chance
+
 # config atual
 especie_jogador = "Flormaja"
 nivel_jogador = 25
@@ -226,10 +240,35 @@ selecao_ataque = 0
 tela_atual = "menu"
 etapa_batalha = ""
 mensagem_batalha = ""
+etapa_fugir = ""
+mensagem_fugir = ""
+etapa_mochila = ""
+selecao_mochila = 0
+mensagem_mochila = ""
 tempo_mensagem = 0
 cinmon_derrotado = None
 inicio_derrota = 0
 rodando = True
+
+#mochila
+itens_mochila = {
+    "Pocao": {
+        "sprite": pocao_img,
+        "quantidade": 3,
+        "descricao": [
+            "Recupera 30 pontos de HP",
+            "do seu CinMon."
+        ]
+    },
+    "Cinballs": {
+        "sprite": cinball_img,
+        "quantidade": 5,
+        "descricao": [
+            "Usada para tentar capturar",
+            "CinMons selvagens."
+        ]
+    },
+}
 
 # --- 5. LOOP PRINCIPAL ---
 while rodando:
@@ -239,15 +278,111 @@ while rodando:
 
         if evento.type == pygame.KEYDOWN:
             if tela_atual == "menu":
-                if evento.key == pygame.K_d: selecao = min(3, selecao + 1)
-                if evento.key == pygame.K_a: selecao = max(0, selecao - 1)
-                if evento.key == pygame.K_s: selecao = min(3, selecao + 2)
-                if evento.key == pygame.K_w: selecao = max(0, selecao - 2)
-                
-                if evento.key == pygame.K_RETURN and selecao == 0:
-                    tela_atual = "ataques"
-                    selecao_ataque = 0
 
+                if evento.key == pygame.K_d:
+                    selecao = min(3, selecao + 1)
+
+                if evento.key == pygame.K_a:
+                    selecao = max(0, selecao - 1)
+
+                if evento.key == pygame.K_s:
+                    selecao = min(3, selecao + 2)
+
+                if evento.key == pygame.K_w:
+                    selecao = max(0, selecao - 2)
+
+                if evento.key == pygame.K_RETURN:
+
+                    if selecao == 0:
+                        tela_atual = "ataques"
+                        selecao_ataque = 0
+
+                    elif selecao == 1:
+                        tela_atual = "mochila"
+                        selecao_mochila = 0
+
+                    elif selecao == 3:
+                        chance = chance_fugir(nivel_jogador, nivel_adversario)
+
+                        if random.randint(1, 100) <= chance:
+                            mensagem_batalha = f"{especie_jogador} conseguiu fugir!"
+                            tela_atual = "fim_batalha"
+
+                        else:
+                            atqs_disponiveis = [i for i, qr in enumerate(qr_adversario) if qr > 0]
+
+                            if atqs_disponiveis:
+                                ataque_escolhido = random.choice(atqs_disponiveis)
+                                qr_adversario[ataque_escolhido] -= 1
+
+                                mensagem_batalha = f"Não conseguiu fugir! {especie_adversario} usou {ataques_adversario[ataque_escolhido]}!"
+
+                                etapa_batalha = "ataque_adversario"
+                                tela_atual = "mensagem"
+                                tempo_mensagem = pygame.time.get_ticks()
+
+                            else:
+                                mensagem_batalha = "O adversário não tem mais ataques!"
+                                etapa_batalha = "sem_ataques"
+                                tela_atual = "mensagem"
+
+            elif tela_atual == "mochila":
+
+                if evento.key == pygame.K_s or evento.key == pygame.K_d:
+                    selecao_mochila = min(1, selecao_mochila + 1)
+
+                if evento.key == pygame.K_w or evento.key == pygame.K_a:
+                    selecao_mochila = max(0, selecao_mochila - 1)
+
+                if evento.key == pygame.K_ESCAPE:
+                    tela_atual = "menu"
+
+                if evento.key == pygame.K_RETURN:
+
+                    if selecao_mochila == 0:
+                        if itens_mochila["Pocao"]["quantidade"] > 0:
+
+                            if cinmon_jogador["hp"] < cinmon_jogador["hp_max"]:
+                                cinmon_jogador["hp"] = min(
+                                    cinmon_jogador["hp_max"],
+                                    cinmon_jogador["hp"] + 30
+                                )
+
+                                itens_mochila["Pocao"]["quantidade"] -= 1
+
+                                mensagem_batalha = f"{especie_jogador} recuperou HP!"
+                                etapa_batalha = "esperando_jogador"
+                                tela_atual = "mensagem"
+
+                            else:
+                                mensagem_batalha = "Seu CinMon ja possui HP maximo!"
+                                tela_atual = "mensagem"
+
+                        else:
+                            mensagem_batalha = "Voce nao possui mais pocoes!"
+                            tela_atual = "mensagem"
+
+                    elif selecao_mochila == 1:
+                        if itens_mochila["Cinballs"]["quantidade"] > 0:
+
+                            itens_mochila["Cinballs"]["quantidade"] -= 1
+
+                            chance_captura = 40 + int(
+                                50 * (1 - cinmon_adversario["hp"] / cinmon_adversario["hp_max"])
+                            )
+
+                            if random.randint(1, 100) <= chance_captura:
+                                mensagem_batalha = f"{especie_adversario} foi capturado!"
+                                tela_atual = "fim_batalha"
+
+                            else:
+                                mensagem_batalha = "O CinMon escapou da Cinball!"
+                                etapa_batalha = "esperando_jogador"
+                                tela_atual = "mensagem"
+
+                        else:
+                            mensagem_batalha = "Voce nao possui mais Cinballs!"
+                            tela_atual = "mensagem"
             elif tela_atual == "ataques":
                 if evento.key == pygame.K_d and selecao_ataque % 2 == 0: selecao_ataque += 1
                 if evento.key == pygame.K_a and selecao_ataque % 2 == 1: selecao_ataque -= 1
@@ -271,6 +406,10 @@ while rodando:
                         mensagem_batalha = f"{especie_adversario} usou {ataques_adversario[ataque_escolhido]}!"
                         etapa_batalha = "ataque_adversario"
                         tempo_mensagem = pygame.time.get_ticks()
+
+                if evento.key == pygame.K_RETURN and etapa_batalha == "sem_ataques":
+                    tela_atual = "menu"
+                    etapa_batalha = ""
 
             elif tela_atual == "fim_batalha" and evento.key == pygame.K_RETURN:
                 rodando = False
@@ -357,7 +496,41 @@ while rodando:
 
         tela.blit(fonte.render(f"QR: {qr_ataques[selecao_ataque]}/{qr_max[selecao_ataque]}", True, (0, 0, 0)), (730, 425))
         tela.blit(fonte.render(f"TIPO: {especies_cinmon[especie_jogador]['tipo'].upper()}", True, (0, 0, 0)), (730, 480))
+    elif tela_atual == "mochila":
 
+        # Fundo da mochila
+        tela.blit(mochila, (0, 0))
+
+        # Posições dos itens
+        posicoes_itens = [(380, 50), (380, 100)]
+
+        nomes_itens = ["Pocao", "Cinballs"]
+
+        for i, nome in enumerate(nomes_itens):
+
+            x, y = posicoes_itens[i]
+
+            # Nome do item
+            texto_item = fonte.render(nome, True, (0, 0, 0))
+            tela.blit(texto_item, (x, y))
+
+            # Quantidade
+            quantidade = itens_mochila[nome]["quantidade"]
+            texto_quantidade = fonte.render(f"x {quantidade}", True, (0, 0, 0))
+            tela.blit(texto_quantidade, (x + 400, y))
+
+            # Indicador de seleção
+            if selecao_mochila == i:
+
+                pygame.draw.polygon(tela, (0, 0, 0), [(x - 17, y + 8), (x + -5, y + 15), (x - 17, y + 22)])
+
+                # Sprite do item selecionado
+                tela.blit(itens_mochila[nome]["sprite"], (35, 410))
+
+                # Descrição do item selecionado
+                for j, linha in enumerate(itens_mochila[nome]["descricao"]):
+                    texto_descricao = fonte.render(linha, True, (0, 0, 0))
+                    tela.blit(texto_descricao, (220, 430 + j * 40))
     pygame.display.flip()
     relogio.tick(60)
 
